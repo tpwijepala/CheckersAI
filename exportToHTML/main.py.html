@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>main.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #6a8759;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+main.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">pygame</span>
+<span class="s0">from </span><span class="s1">Checkers.constants </span><span class="s0">import </span><span class="s1">WIDTH</span><span class="s0">, </span><span class="s1">HEIGHT</span><span class="s0">, </span><span class="s1">SQUARE_SIZE</span><span class="s0">, </span><span class="s1">WHITE</span><span class="s0">, </span><span class="s1">RED</span>
+<span class="s0">from </span><span class="s1">Checkers.game </span><span class="s0">import </span><span class="s1">Game</span>
+<span class="s0">from </span><span class="s1">Checkers.board </span><span class="s0">import </span><span class="s1">Board</span>
+<span class="s0">from </span><span class="s1">Checkers.piece </span><span class="s0">import </span><span class="s1">Piece</span>
+<span class="s0">from </span><span class="s1">minimax.algorithm </span><span class="s0">import </span><span class="s1">minimax</span>
+
+<span class="s1">FPS = </span><span class="s2">60</span>
+
+<span class="s1">DISPLAY = pygame.display.set_mode((WIDTH</span><span class="s0">, </span><span class="s1">HEIGHT))</span>
+<span class="s1">pygame.display.set_caption(</span><span class="s3">'Checkers AI'</span><span class="s1">)</span>
+
+
+<span class="s0">def </span><span class="s1">mouse_pos(pos):</span>
+    <span class="s1">x</span><span class="s0">, </span><span class="s1">y = pos</span>
+    <span class="s1">row = y // SQUARE_SIZE</span>
+    <span class="s1">col = x // SQUARE_SIZE</span>
+    <span class="s0">return </span><span class="s1">row</span><span class="s0">, </span><span class="s1">col</span>
+
+
+<span class="s0">def </span><span class="s1">main():</span>
+    <span class="s1">playing = </span><span class="s0">True</span>
+    <span class="s1">frames = pygame.time.Clock()</span>
+    <span class="s1">game = Game(DISPLAY)</span>
+
+    <span class="s0">while </span><span class="s1">playing:</span>
+        <span class="s4"># run game at 60fps</span>
+        <span class="s1">frames.tick(FPS)</span>
+
+        <span class="s0">if </span><span class="s1">game.winner() != </span><span class="s0">None</span><span class="s1">:</span>
+            <span class="s1">print(game.winner() + </span><span class="s3">&quot; HAS WON THE GAME&quot;</span><span class="s1">)</span>
+            <span class="s0">break</span>
+
+        <span class="s4"># checks if player can't make a move</span>
+        <span class="s0">if </span><span class="s1">game.no_valid_moves() == </span><span class="s0">None</span><span class="s1">:</span>
+            <span class="s0">if </span><span class="s1">game.turn == WHITE:</span>
+                <span class="s1">print(</span><span class="s3">&quot;WHITE HAS NO POSSIBLE MOVES&quot;</span><span class="s1">)</span>
+            <span class="s0">elif </span><span class="s1">game.turn == RED:</span>
+                <span class="s1">print(</span><span class="s3">&quot;RED HAS NO POSSIBLE MOVES&quot;</span><span class="s1">)</span>
+            <span class="s0">break</span>
+
+        <span class="s4"># white turn is ai's turn</span>
+        <span class="s0">if </span><span class="s1">game.turn == WHITE:</span>
+            <span class="s1">value</span><span class="s0">, </span><span class="s1">new_board = minimax(game.get_board()</span><span class="s0">, </span><span class="s2">4</span><span class="s0">, </span><span class="s1">float(</span><span class="s3">'-inf'</span><span class="s1">)</span><span class="s0">, </span><span class="s1">float(</span><span class="s3">'inf'</span><span class="s1">)</span><span class="s0">, </span><span class="s1">WHITE</span><span class="s0">, </span><span class="s1">game)</span>
+            <span class="s1">game.ai_move(new_board)</span>
+
+        <span class="s4"># default pygame actions</span>
+        <span class="s0">for </span><span class="s1">action </span><span class="s0">in </span><span class="s1">pygame.event.get():</span>
+
+            <span class="s4"># check if player quit game</span>
+            <span class="s0">if </span><span class="s1">action.type == pygame.QUIT:</span>
+                <span class="s1">playing = </span><span class="s0">False</span>
+
+            <span class="s4"># gets mouse click position</span>
+            <span class="s0">if </span><span class="s1">action.type == pygame.MOUSEBUTTONDOWN:</span>
+                <span class="s1">pos = pygame.mouse.get_pos()</span>
+                <span class="s1">row</span><span class="s0">, </span><span class="s1">col = mouse_pos(pos)</span>
+                <span class="s1">game.select(row</span><span class="s0">, </span><span class="s1">col)</span>
+
+        <span class="s4"># keeps updating game class</span>
+        <span class="s1">game.update()</span>
+
+    <span class="s1">pygame.quit()</span>
+
+
+<span class="s1">main()</span>
+</pre>
+</body>
+</html>
