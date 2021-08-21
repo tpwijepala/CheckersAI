@@ -134,7 +134,6 @@ class Board:
 
                 elif skipped:  # double jumps
                     moves[(row, left)] = last_skipped + skipped  # update the moves to add the extra jump
-                    print(moves)
                 else:
                     moves[(row, left)] = last_skipped  # if no skip, we just move to the empty square
 
