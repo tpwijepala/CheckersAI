@@ -1,3 +1,4 @@
+from logging import captureWarnings
 import pygame
 from Checkers.constants import RED, WHITE
 from copy import deepcopy
@@ -7,7 +8,9 @@ def minimax(board, depth, alpha, beta, max_player, game):
     if depth == 0 or board.winner() != None:  # last move in depth
         # evaluates every possible move by both players for given depth
         # and gets value of each end position by calculating # of pieces
-        return board.evaluate(), board
+        color = WHITE if max_player else RED
+        return quiescence_search(board, alpha, beta, color, game), board
+        # return board.evaluate(), board
 
     if max_player:  # maximizing value // white move
         maxEval = float('-inf')
@@ -49,6 +52,24 @@ def minimax(board, depth, alpha, beta, max_player, game):
 
         return minEval, best_move
 
+def quiescence_search(board, alpha, beta, color, game):
+    eval = board.evaluate()
+    
+    if beta <= eval:
+        return beta
+    if alpha < eval:
+        alpha = eval
+    
+    for capture in get_all_captures(board, color, game):
+        opposite_color = RED if color == WHITE else WHITE
+        score = 0 - (quiescence_search(capture, -beta, -alpha, opposite_color, game))
+        if (beta <= score):
+            return beta
+        if (alpha < score):
+            alpha = score
+            
+    return alpha
+            
 
 def simulate_move(piece, move, board, game, skip):
     # creating imaginary board to help ai figure out best/worst eval
@@ -71,3 +92,17 @@ def get_all_moves(board, color, game):
             moves.append(new_board)  # possible moves from new move
 
     return moves  # updated moves from new position
+
+def get_all_captures(board, color, game):
+    captures = []
+
+    for piece in board.get_all_pieces(color):
+        valid_moves = board.get_valid_moves(piece)
+        for move, skip in valid_moves.items():  # each end position and spaces skipped
+            if skip:
+                temp_board = deepcopy(board)  # w/ deep copy you can edit one copy w/o affecting the other
+                temp_piece = temp_board.get_piece(piece.row, piece.col)
+                new_board = simulate_move(temp_piece, move, temp_board, game, skip)  # new board setup after possible move
+                captures.append(new_board)  # possible moves from new move
+
+    return captures  # updated moves from new position
