@@ -36,7 +36,7 @@ class Board:
     # evaluation for ai decision making
     def evaluate(self):
         # normal pieces are worth 1, kings are worth 1.5
-        return self.white_remaining - self.red_remaining + (self.white_kings * 0.5 - self.red_kings * 0.5)
+        return self.white_remaining*3 - self.red_remaining*3 + (self.white_kings*2 - self.red_kings*2)
 
     def get_all_pieces(self, color):
         pieces = []
