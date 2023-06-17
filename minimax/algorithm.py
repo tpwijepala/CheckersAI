@@ -20,7 +20,6 @@ def minimax(board, depth, alpha, beta, max_player, game):
         best_move = None
         for move in get_all_moves(board, WHITE, game):  # all possible moves in current position
             eval = minimax(move, depth - 1, alpha, beta, False, game)[0]
-            print(eval)
             # eval is value of move that red would make (value that would minimize white's value)
             # beta is current best red move which will lead red to minimizing score
             # alpha is current best white move which leads to white to maximizing score
@@ -44,7 +43,7 @@ def minimax(board, depth, alpha, beta, max_player, game):
             # eval is value of move that white would make (value that would maximizes white's value)
             # alpha is current best white move which leads to white to maximizing score
             # beta is current best red move which will lead red to minimizing score
-            print("min eval", eval)
+
             minEval = min(minEval, eval)  # chooses move w/ lowest eval for current position
             beta = min(beta, eval)
             if beta <= alpha:
