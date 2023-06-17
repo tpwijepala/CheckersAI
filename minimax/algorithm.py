@@ -9,14 +9,18 @@ def minimax(board, depth, alpha, beta, max_player, game):
         # evaluates every possible move by both players for given depth
         # and gets value of each end position by calculating # of pieces
         color = WHITE if max_player else RED
-        return quiescence_search(board, alpha, beta, color, game), board
-        # return board.evaluate(), board
+        
+        # quiesence search checks if there are any immediate captures available
+        # and if so, evalutes the board after the these immediate captures
+        return -quiescence_search(board, alpha, beta, color, game), board
+
 
     if max_player:  # maximizing value // white move
         maxEval = float('-inf')
         best_move = None
         for move in get_all_moves(board, WHITE, game):  # all possible moves in current position
             eval = minimax(move, depth - 1, alpha, beta, False, game)[0]
+            print(eval)
             # eval is value of move that red would make (value that would minimize white's value)
             # beta is current best red move which will lead red to minimizing score
             # alpha is current best white move which leads to white to maximizing score
@@ -40,7 +44,7 @@ def minimax(board, depth, alpha, beta, max_player, game):
             # eval is value of move that white would make (value that would maximizes white's value)
             # alpha is current best white move which leads to white to maximizing score
             # beta is current best red move which will lead red to minimizing score
-
+            print("min eval", eval)
             minEval = min(minEval, eval)  # chooses move w/ lowest eval for current position
             beta = min(beta, eval)
             if beta <= alpha:
@@ -62,7 +66,9 @@ def quiescence_search(board, alpha, beta, color, game):
     
     for capture in get_all_captures(board, color, game):
         opposite_color = RED if color == WHITE else WHITE
-        score = 0 - (quiescence_search(capture, -beta, -alpha, opposite_color, game))
+        # Evaluate board after series of immediate captures are completed
+        score = -(quiescence_search(capture, -beta, -alpha, opposite_color, game))
+        
         if (beta <= score):
             return beta
         if (alpha < score):
@@ -105,4 +111,4 @@ def get_all_captures(board, color, game):
                 new_board = simulate_move(temp_piece, move, temp_board, game, skip)  # new board setup after possible move
                 captures.append(new_board)  # possible moves from new move
 
-    return captures  # updated moves from new position
+    return captures
