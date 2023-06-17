@@ -19,7 +19,7 @@ def minimax(board, depth, alpha, beta, max_player, game):
             # alpha is current best white move which leads to white to maximizing score
 
             maxEval = max(maxEval, eval)  # chooses move w/ highest eval for current position
-            alpha = max(alpha, eval)
+            alpha = max(alpha, maxEval)
             if beta <= alpha:
                 # if red has lower beta value than current alpha val, there is no longer a need to run
                 # since red will choose the move which leads to minimizing score while white chooses a betters score
