@@ -41,7 +41,7 @@ def main():
 
         # white turn is ai's turn
         if game.turn == WHITE:
-            value, new_board = minimax(game.get_board(), 5, float('-inf'), float('inf'), True, game)
+            value, new_board = minimax(game.get_board(), 3, float('-inf'), float('inf'), True, game)
             game.ai_move(new_board)
 
         # default pygame actions
@@ -59,7 +59,7 @@ def main():
 
         # keeps updating game class
         game.update()
-
+        
     pygame.quit()
 
 

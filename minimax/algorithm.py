@@ -8,34 +8,35 @@ def minimax(board, depth, alpha, beta, max_player, game):
     if depth == 0 or board.winner() != None:  # last move in depth
         # evaluates every possible move by both players for given depth
         # and gets value of each end position by calculating # of pieces
-        
+        color = WHITE if max_player else RED
         # quiesence search checks if there are any immediate captures available
         # and if so, evalutes the board after the these immediate captures
-        return -quiescence_search(board, -beta, -alpha, max_player, game), board
+        print("ALPHA:", alpha, "BETA", beta)
+        return quiescence_search(board, alpha, beta, color, game), board
 
 
     if max_player:  # maximizing value // white move
-        maxEval = float('-inf')
+        alpha = float('-inf')
         best_move = None
         for move in get_all_moves(board, WHITE, game):  # all possible moves in current position
             evaluation = minimax(move, depth - 1, alpha, beta, False, game)[0]
             # eval is value of move that red would make (value that would minimize white's value)
             # beta is current best red move which will lead red to minimizing score
             # alpha is current best white move which leads to white to maximizing score
-
-            maxEval = max(maxEval, evaluation)  # chooses move w/ highest eval for current position
-            alpha = max(alpha, maxEval)
+            
+            alpha = max(alpha, evaluation)
             if beta <= alpha:
                 # if red has lower beta value than current alpha val, there is no longer a need to run
                 # since red will choose the move which leads to minimizing score while white chooses a betters score
-                break
+                return alpha, best_move
             
-            if maxEval == evaluation:
+            if alpha == evaluation:
                 best_move = move  # if current eval is lowest, set move to current move
-        return maxEval, best_move
+                
+        return alpha, best_move
 
     else:  # minimizing value // red move
-        minEval = float('inf')
+        beta = float('inf')
         best_move = None
         for move in get_all_moves(board, RED, game):
             evaluation = minimax(move, depth - 1, alpha, beta, True, game)[0]
@@ -43,34 +44,39 @@ def minimax(board, depth, alpha, beta, max_player, game):
             # alpha is current best white move which leads to white to maximizing score
             # beta is current best red move which will lead red to minimizing score
 
-            minEval = min(minEval, evaluation)  # chooses move w/ lowest eval for current position
             beta = min(beta, evaluation)
             if beta <= alpha:
                 # if reds finds a move w/ lower eval, white won't care, white will use the alpha move since it
                 # will lead white to maximizing his score
-                break
+                return beta, best_move
             
-            if minEval == evaluation:
+            if beta == evaluation:
                 best_move = move  # if current eval is lowest, set best red move to current move
                 
-        return minEval, best_move
+        return beta, best_move
 
 def quiescence_search(board, alpha, beta, color, game):
     evaluation = board.evaluate()
+    
     if beta <= evaluation:
         return beta
+    
     if alpha < evaluation:
         alpha = evaluation
+    
+    if (not get_all_captures(board, color, game)):
+        return evaluation
     
     for capture in get_all_captures(board, color, game):
         opposite_color = RED if color == WHITE else WHITE
         # Evaluate board after series of immediate captures are completed
-        score = -(quiescence_search(capture, -beta, -alpha, opposite_color, game))
+        score = (quiescence_search(capture, -beta, -alpha, opposite_color, game))
         print(score, alpha, beta)
         if (beta <= score):
             return beta
         if (alpha < score):
             alpha = score
+            
     return alpha
             
 
@@ -103,7 +109,6 @@ def get_all_captures(board, color, game):
         valid_moves = board.get_valid_moves(piece)
         for move, skip in valid_moves.items():  # each end position and spaces skipped
             if skip:
-                print(move[0], move[1])
                 # draw_simulation(game, board, piece)
                 temp_board = deepcopy(board)  # w/ deep copy you can edit one copy w/o affecting the other
                 temp_piece = temp_board.get_piece(piece.row, piece.col)
