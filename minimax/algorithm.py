@@ -11,7 +11,6 @@ def minimax(board, depth, alpha, beta, max_player, game):
         color = WHITE if max_player else RED
         # quiesence search checks if there are any immediate captures available
         # and if so, evalutes the board after the these immediate captures
-        print("ALPHA:", alpha, "BETA", beta)
         return quiescence_search(board, alpha, beta, color, game), board
 
 
@@ -71,7 +70,6 @@ def quiescence_search(board, alpha, beta, color, game):
         opposite_color = RED if color == WHITE else WHITE
         # Evaluate board after series of immediate captures are completed
         score = (quiescence_search(capture, -beta, -alpha, opposite_color, game))
-        print(score, alpha, beta)
         if (beta <= score):
             return beta
         if (alpha < score):
